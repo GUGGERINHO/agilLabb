@@ -37,10 +37,13 @@ const ITEMS = [
   { id: 6, name: 'Monitor Stand', price: 39.99 },
 ]
 
-function Shop() {
+function Shop({ onLogout }: { onLogout: () => void }) {
   return (
     <div style={styles.shop}>
-      <h1 style={styles.h1}>Shop</h1>
+      <div style={styles.header}>
+        <h1 style={styles.h1}>Shop</h1>
+        <button onClick={onLogout} style={styles.logoutBtn}>Logout</button>
+      </div>
       <div style={styles.grid}>
         {ITEMS.map(item => (
           <div key={item.id} style={styles.card}>
@@ -58,7 +61,7 @@ function Shop() {
 export default function App() {
   const [auth, setAuth] = useState(false)
   return auth
-    ? <Shop />
+    ? <Shop onLogout={() => setAuth(false)} />
     : <Login onLogin={() => setAuth(true)} />
 }
 
@@ -69,6 +72,8 @@ const styles: Record<string, React.CSSProperties> = {
   btn: { width: 264, padding: 10, background: '#111', color: '#fff', border: 'none', borderRadius: 6, fontSize: 14, cursor: 'pointer' },
   err: { color: 'red', fontSize: 13, margin: 0 },
   shop: { padding: '40px 32px', fontFamily: 'system-ui, sans-serif' },
+  header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
+  logoutBtn: { padding: '8px 16px', background: '#fff', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 13, cursor: 'pointer' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 24, marginTop: 24 },
   card: { border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, textAlign: 'center' as const },
   placeholder: { height: 140, background: '#f3f4f6', borderRadius: 6, marginBottom: 12 },
