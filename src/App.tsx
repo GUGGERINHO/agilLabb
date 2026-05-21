@@ -28,10 +28,37 @@ function Login({ onLogin }: { onLogin: () => void }) {
   )
 }
 
+const ITEMS = [
+  { id: 1, name: 'Wireless Headphones', price: 79.99 },
+  { id: 2, name: 'Mechanical Keyboard', price: 129.99 },
+  { id: 3, name: 'USB-C Hub', price: 49.99 },
+  { id: 4, name: 'Webcam HD', price: 59.99 },
+  { id: 5, name: 'Mouse Pad XL', price: 24.99 },
+  { id: 6, name: 'Monitor Stand', price: 39.99 },
+]
+
+function Shop() {
+  return (
+    <div style={styles.shop}>
+      <h1 style={styles.h1}>Shop</h1>
+      <div style={styles.grid}>
+        {ITEMS.map(item => (
+          <div key={item.id} style={styles.card}>
+            <div style={styles.placeholder} />
+            <h3 style={styles.name}>{item.name}</h3>
+            <p style={styles.price}>${item.price}</p>
+            <button style={styles.cartBtn}>Add to Cart</button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 export default function App() {
   const [auth, setAuth] = useState(false)
   return auth
-    ? <div style={styles.dashboard}><p>Welcome</p></div>
+    ? <Shop />
     : <Login onLogin={() => setAuth(true)} />
 }
 
@@ -41,5 +68,11 @@ const styles: Record<string, React.CSSProperties> = {
   input: { width: 240, padding: '8px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, outline: 'none' },
   btn: { width: 264, padding: 10, background: '#111', color: '#fff', border: 'none', borderRadius: 6, fontSize: 14, cursor: 'pointer' },
   err: { color: 'red', fontSize: 13, margin: 0 },
-  dashboard: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100svh', fontFamily: 'system-ui, sans-serif' },
+  shop: { padding: '40px 32px', fontFamily: 'system-ui, sans-serif' },
+  grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 24, marginTop: 24 },
+  card: { border: '1px solid #e5e7eb', borderRadius: 8, padding: 16, textAlign: 'center' as const },
+  placeholder: { height: 140, background: '#f3f4f6', borderRadius: 6, marginBottom: 12 },
+  name: { fontSize: 15, fontWeight: 500, margin: '0 0 4px' },
+  price: { fontSize: 16, margin: '0 0 12px', color: '#111' },
+  cartBtn: { padding: '8px 0', width: '100%', background: '#111', color: '#fff', border: 'none', borderRadius: 6, fontSize: 13, cursor: 'pointer' },
 }
