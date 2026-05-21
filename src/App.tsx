@@ -3,6 +3,17 @@ import { useState, type FormEvent } from 'react'
 const USER = 'admin'
 const PASS = 'password'
 
+type Item = { id: number; name: string; price: string; img: string; stock: number; desc: string; reviews: string; seller: string }
+
+const ITEMS: Item[] = [
+  { id: 1, name: 'Sony WH-1000XM4 - Blue', price: '2 599,00 kr', img: 'https://www.proshop.se/Images/915x900/2991444_0bdb39325e57.jpg', stock: 24, desc: 'Industry-leading noise cancelling with Auto NC Optimizer. Up to 30h battery life.', reviews: '4.7 (1 203 reviews)', seller: 'Proshop' },
+  { id: 2, name: 'Mechanical Keyboard', price: '1 299,00 kr', img: 'https://cdn.discordapp.com/attachments/1503731707512356967/1507058577305768137/photo-1712396901531-605f06a423aa.png?ex=6a10852c&is=6a0f33ac&hm=8ffb173130f2018b46db9c5246b4faf441a8ad3258ee80a3c828d8e2cb1f68b1&', stock: 15, desc: 'Hot-swappable switches, per-key RGB lighting, aluminum frame.', reviews: '4.5 (842 reviews)', seller: 'MechKeys AB' },
+  { id: 3, name: 'USB-C Hub', price: '499,00 kr', img: 'https://plus.unsplash.com/premium_photo-1764113096548-11270b5febed?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', stock: 58, desc: '7-in-1 hub with HDMI 4K, USB 3.0, SD/TF card reader, PD 100W charging.', reviews: '4.3 (567 reviews)', seller: 'TechZone' },
+  { id: 4, name: 'Webcam HD', price: '599,00 kr', img: 'https://images.unsplash.com/photo-1623949556303-b0d17d198863?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', stock: 33, desc: '1080p Full HD, auto-focus, built-in dual stereo microphones, privacy cover.', reviews: '4.4 (391 reviews)', seller: 'CamStore' },
+  { id: 5, name: 'GLORIOUS Gaming Cloth Gaming Mousepad (XL)', price: '197,00 kr', img: 'https://m.media-amazon.com/images/I/51MqRpjU-5L.jpg', stock: 112, desc: '900x400mm extended surface, non-slip rubber base, stitched edges, machine washable.', reviews: '4.6 (2 105 reviews)', seller: 'Amazon.se' },
+  { id: 6, name: 'Monitor Stand', price: '399,00 kr', img: 'https://plus.unsplash.com/premium_photo-1706545209829-1b082de60f15?q=80&w=723&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D', stock: 41, desc: 'Bamboo wood stand with storage drawer, elevates screen to ergonomic height.', reviews: '4.2 (278 reviews)', seller: 'NordicDesk' },
+]
+
 function Login({ onLogin }: { onLogin: () => void }) {
   const [err, setErr] = useState('')
 
@@ -28,16 +39,27 @@ function Login({ onLogin }: { onLogin: () => void }) {
   )
 }
 
-const ITEMS = [
-  { id: 1, name: 'Sony WH-1000XM4 - Blue', price: '2 599,00 kr', img: 'https://www.proshop.se/Images/915x900/2991444_0bdb39325e57.jpg' },
-  { id: 2, name: 'Mechanical Keyboard', price: '1 299,00 kr', img: 'https://cdn.discordapp.com/attachments/1503731707512356967/1507058577305768137/photo-1712396901531-605f06a423aa.png?ex=6a10852c&is=6a0f33ac&hm=8ffb173130f2018b46db9c5246b4faf441a8ad3258ee80a3c828d8e2cb1f68b1&' },
-  { id: 3, name: 'USB-C Hub', price: '499,00 kr', img: 'https://plus.unsplash.com/premium_photo-1764113096548-11270b5febed?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { id: 4, name: 'Webcam HD', price: '599,00 kr', img: 'https://images.unsplash.com/photo-1623949556303-b0d17d198863?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-  { id: 5, name: 'GLORIOUS Gaming Cloth Gaming Mousepad (XL)', price: '197,00 kr', img: 'https://m.media-amazon.com/images/I/51MqRpjU-5L.jpg' },
-  { id: 6, name: 'Monitor Stand', price: '399,00 kr', img: 'https://plus.unsplash.com/premium_photo-1706545209829-1b082de60f15?q=80&w=723&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D' },
-]
+function Modal({ item, onClose }: { item: Item; onClose: () => void }) {
+  return (
+    <div style={styles.overlay} onClick={onClose}>
+      <div style={styles.modal} onClick={e => e.stopPropagation()}>
+        <button onClick={onClose} style={styles.closeBtn}>&times;</button>
+        <img src={item.img} alt={item.name} style={styles.modalImg} />
+        <h2 style={styles.modalName}>{item.name}</h2>
+        <p style={styles.modalPrice}>{item.price}</p>
+        <p style={styles.detail}><b>Stock:</b> {item.stock} units</p>
+        <p style={styles.detail}><b>Description:</b> {item.desc}</p>
+        <p style={styles.detail}><b>Reviews:</b> {item.reviews}</p>
+        <p style={styles.detail}><b>Seller:</b> {item.seller}</p>
+        <button style={styles.cartBtn}>Add to Cart</button>
+      </div>
+    </div>
+  )
+}
 
 function Shop({ onLogout }: { onLogout: () => void }) {
+  const [selected, setSelected] = useState<Item | null>(null)
+
   return (
     <div style={styles.shop}>
       <div style={styles.header}>
@@ -46,7 +68,7 @@ function Shop({ onLogout }: { onLogout: () => void }) {
       </div>
       <div style={styles.grid}>
         {ITEMS.map(item => (
-          <div key={item.id} style={styles.card}>
+          <div key={item.id} style={styles.card} onClick={() => setSelected(item)}>
             <img src={item.img} alt={item.name} style={styles.img} />
             <h3 style={styles.name}>{item.name}</h3>
             <p style={styles.price}>{item.price}</p>
@@ -54,6 +76,7 @@ function Shop({ onLogout }: { onLogout: () => void }) {
           </div>
         ))}
       </div>
+      {selected && <Modal item={selected} onClose={() => setSelected(null)} />}
     </div>
   )
 }
@@ -75,9 +98,16 @@ const styles: Record<string, React.CSSProperties> = {
   header: { display: 'flex', justifyContent: 'space-between', alignItems: 'center' },
   logoutBtn: { padding: '8px 16px', background: '#fff', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 13, cursor: 'pointer' },
   grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))', gap: 28, marginTop: 24 },
-  card: { border: '1px solid #e5e7eb', borderRadius: 8, padding: 20, textAlign: 'center' as const },
+  card: { border: '1px solid #e5e7eb', borderRadius: 8, padding: 20, textAlign: 'center' as const, cursor: 'pointer' },
   img: { height: 200, width: '100%', objectFit: 'cover' as const, borderRadius: 6, marginBottom: 14 },
   name: { fontSize: 16, fontWeight: 500, margin: '0 0 6px' },
   price: { fontSize: 18, margin: '0 0 14px', color: '#111' },
-  cartBtn: { padding: '10px 0', width: '100%', background: '#111', color: '#fff', border: 'none', borderRadius: 6, fontSize: 14, cursor: 'pointer' },
+  cartBtn: { padding: '10px 0', width: '100%', background: '#111', color: '#fff', border: 'none', borderRadius: 6, fontSize: 14, cursor: 'pointer', marginTop: 12 },
+  overlay: { position: 'fixed' as const, inset: 0, background: 'rgba(0,0,0,0.5)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 999 },
+  modal: { background: '#fff', borderRadius: 12, padding: 28, maxWidth: 440, width: '90%', maxHeight: '90vh', overflow: 'auto', position: 'relative' as const },
+  closeBtn: { position: 'absolute' as const, top: 12, right: 16, background: 'none', border: 'none', fontSize: 24, cursor: 'pointer' },
+  modalImg: { width: '100%', borderRadius: 8, marginBottom: 16 },
+  modalName: { fontSize: 20, fontWeight: 600, margin: '0 0 4px' },
+  modalPrice: { fontSize: 22, fontWeight: 700, color: '#111', margin: '0 0 16px' },
+  detail: { fontSize: 14, margin: '0 0 8px', lineHeight: 1.5 },
 }
