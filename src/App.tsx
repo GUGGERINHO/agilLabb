@@ -51,8 +51,42 @@ function Modal({ item, onClose, onAdd }: { item: Item; onClose: () => void; onAd
   )
 }
 
-function Cart({ items, onBack, onRemove, onLogout }: {
-  items: CartEntry[]; onBack: () => void; onRemove: (id: number) => void; onLogout: () => void
+function Checkout({ onBack, onLogout }: { onBack: () => void; onLogout: () => void }) {
+  const [done, setDone] = useState(false)
+  if (done) return (
+    <div style={styles.checkoutWrap}>
+      <div style={styles.checkoutBox}>
+        <p style={styles.success}>&#10003; Order was successful!</p>
+        <button onClick={onBack} style={styles.btn}>Continue Shopping</button>
+        <button onClick={onLogout} style={styles.logoutBtn}>Logout</button>
+      </div>
+    </div>
+  )
+  return (
+    <div style={styles.shop}>
+      <div style={styles.header}>
+        <button onClick={onBack} style={styles.backBtn}>&larr; Cart</button>
+        <h1 style={styles.h1}>Checkout</h1>
+        <button onClick={onLogout} style={styles.logoutBtn}>Logout</button>
+      </div>
+      <form onSubmit={e => { e.preventDefault(); setDone(true) }} style={styles.checkoutForm}>
+        <h3 style={styles.sectionTitle}>Shipping Address</h3>
+        <input name="name" placeholder="Full Name" required style={styles.checkoutInput} />
+        <input name="address" placeholder="Address" required style={styles.checkoutInput} />
+        <input name="city" placeholder="City" required style={styles.checkoutInput} />
+        <input name="zip" placeholder="Postal Code" required style={styles.checkoutInput} />
+        <h3 style={styles.sectionTitle}>Payment</h3>
+        <input name="card" placeholder="Card Number" required style={styles.checkoutInput} />
+        <input name="expiry" placeholder="MM/YY" required style={styles.checkoutInput} />
+        <input name="cvv" placeholder="CVV" required style={styles.checkoutInput} />
+        <button type="submit" style={styles.payBtn}>Pay</button>
+      </form>
+    </div>
+  )
+}
+
+function Cart({ items, onBack, onRemove, onLogout, onCheckout }: {
+  items: CartEntry[]; onBack: () => void; onRemove: (id: number) => void; onLogout: () => void; onCheckout: () => void
 }) {
   const totalQty = items.reduce((s, e) => s + e.qty, 0)
   const parsePrice = (p: string) => parseFloat(p.replace('kr', '').trim().replace(/\s/g, '').replace(',', '.'))
@@ -79,6 +113,7 @@ function Cart({ items, onBack, onRemove, onLogout }: {
         <div style={styles.cartTotal}>
           <span style={styles.cartTotalLabel}>Total</span>
           <span style={styles.cartTotalValue}>{totalPrice.toLocaleString('sv-SE', { minimumFractionDigits: 2 })} kr</span>
+          <button onClick={onCheckout} style={styles.payBtn}>Proceed to Checkout</button>
         </div>
       )}
     </div>
@@ -88,12 +123,13 @@ function Cart({ items, onBack, onRemove, onLogout }: {
 function Shop({ onLogout }: { onLogout: () => void }) {
   const [selected, setSelected] = useState<Item | null>(null)
   const [cart, setCart] = useState<CartEntry[]>([])
-  const [view, setView] = useState<'shop' | 'cart'>('shop')
+  const [view, setView] = useState<'shop' | 'cart' | 'checkout'>('shop')
 
   const addToCart = (item: Item) => setCart(prev => { const e = prev.find(c => c.item.id === item.id); return e ? prev.map(c => c.item.id === item.id ? { ...c, qty: c.qty + 1 } : c) : [...prev, { item, qty: 1 }] })
   const removeFromCart = (id: number) => setCart(prev => { const e = prev.find(c => c.item.id === id); return e && e.qty > 1 ? prev.map(c => c.item.id === id ? { ...c, qty: c.qty - 1 } : c) : prev.filter(c => c.item.id !== id) })
 
-  if (view === 'cart') return <Cart items={cart} onBack={() => setView('shop')} onRemove={removeFromCart} onLogout={onLogout} />
+  if (view === 'checkout') return <Checkout onBack={() => setView('cart')} onLogout={onLogout} />
+  if (view === 'cart') return <Cart items={cart} onBack={() => setView('shop')} onRemove={removeFromCart} onLogout={onLogout} onCheckout={() => setView('checkout')} />
 
   return (
     <div style={styles.shop}>
@@ -159,6 +195,13 @@ const s: Record<string, React.CSSProperties> = {
   cartTotal: { display: 'flex', justifyContent: 'flex-end', alignItems: 'center', gap: 16, padding: '20px 16px', borderTop: '2px solid #111' },
   cartTotalLabel: { fontSize: 18, fontWeight: 600 },
   cartTotalValue: { fontSize: 22, fontWeight: 700, color: '#111' },
+  checkoutForm: { maxWidth: 480, display: 'flex', flexDirection: 'column' as const, gap: 12, marginTop: 24 },
+  sectionTitle: { fontSize: 16, fontWeight: 600, margin: '8px 0 0' },
+  checkoutInput: { padding: '10px 12px', border: '1px solid #d1d5db', borderRadius: 6, fontSize: 14, outline: 'none' },
+  payBtn: { padding: '12px', background: '#111', color: '#fff', border: 'none', borderRadius: 6, fontSize: 15, fontWeight: 600, cursor: 'pointer' },
+  checkoutWrap: { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100svh', fontFamily: 'system-ui, sans-serif' },
+  checkoutBox: { textAlign: 'center' as const, display: 'flex', flexDirection: 'column' as const, gap: 16, alignItems: 'center' },
+  success: { fontSize: 24, fontWeight: 600, color: '#16a34a' },
 }
 
 const styles = s
